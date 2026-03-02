@@ -427,7 +427,14 @@ function openDetailModal(card) {
   btnVu.querySelector('.vu-label').textContent = seen ? 'Vu ✓' : 'Marquer comme vu';
 
   btnFind.onclick = () => {
-    window.open(`https://www.google.com/search?q=${encodeURIComponent(name)}`, '_blank');
+    const url = `https://www.google.com/search?q=${encodeURIComponent(name)}`;
+    const a   = document.createElement('a');
+    a.href    = url;
+    a.target  = '_blank';
+    a.rel     = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   detailOverlay.classList.add('open');
