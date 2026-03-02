@@ -1,0 +1,18 @@
+{
+  "name": "Ma Watchlist",
+  "short_name": "Watchlist",
+  "description": "Films & Séries à regarder",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#0f1117",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
