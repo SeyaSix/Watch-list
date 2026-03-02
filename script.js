@@ -555,6 +555,107 @@ modalInput.addEventListener('keydown', (e) => {
 });
 
 
+// ════════════════════════════════════════════════════════════
+// Partage de card via URL
+// ════════════════════════════════════════════════════════════
+
+const SITE_BASE_URL    = 'https://seyasix.github.io/Watch-list/';
+const btnShare         = document.getElementById('btn-share');
+const shareBanner      = document.getElementById('share-banner');
+const shareBannerTitle = document.getElementById('share-banner-title');
+const shareBannerMeta  = document.getElementById('share-banner-meta');
+const shareBannerYes   = document.getElementById('share-banner-yes');
+const shareBannerNo    = document.getElementById('share-banner-no');
+
+/** Génère l'URL partageable pour la card actuellement ouverte. */
+function buildShareUrl(card) {
+  const data = {
+    n: card.dataset.name,
+    t: card.dataset.type,
+    c: card.dataset.cats || '',
+    y: card.dataset.year || '',
+  };
+  return `${SITE_BASE_URL}?share=${encodeURIComponent(JSON.stringify(data))}`;
+}
+
+/** Bouton Partager — Web Share API si dispo, sinon copie presse-papiers. */
+btnShare.addEventListener('click', async () => {
+  if (!currentDetailCard) return;
+
+  const url  = buildShareUrl(currentDetailCard);
+  const name = currentDetailCard.dataset.name;
+  const kind = currentDetailCard.dataset.type === 'film' ? 'Film' : 'Série';
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${kind} : ${name}`, url });
+    } catch { /* annulé par l'utilisateur */ }
+    return;
+  }
+
+  // Fallback copie presse-papiers
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+
+  btnShare.textContent = '✓ Lien copié !';
+  btnShare.classList.add('copied');
+  setTimeout(() => {
+    btnShare.textContent = '↗ Partager';
+    btnShare.classList.remove('copied');
+  }, 2200);
+});
+
+/** Affiche la bannière quand l'URL contient ?share=... */
+function handleIncomingShare() {
+  const params = new URLSearchParams(window.location.search);
+  const raw    = params.get('share');
+  if (!raw) return;
+
+  let data;
+  try {
+    data = JSON.parse(decodeURIComponent(raw));
+    if (!data.n || !data.t) throw new Error();
+  } catch {
+    return;
+  }
+
+  // Nettoie l'URL sans recharger
+  history.replaceState(null, '', window.location.pathname);
+
+  // Popule la bannière
+  shareBannerTitle.textContent = data.n;
+  const cats = data.c
+    ? data.c.split(',').filter(Boolean).join(', ')
+    : '';
+  const yearStr = data.y ? ` · ${data.y}` : '';
+  const kind    = data.t === 'film' ? 'Film' : 'Série';
+  shareBannerMeta.textContent = [kind, cats].filter(Boolean).join(' · ') + yearStr;
+
+  shareBannerYes.onclick = async () => {
+    const categories = data.c ? data.c.split(',').filter(Boolean) : [];
+    const year       = data.y ? Number(data.y) : null;
+    const id         = await addItem(data.n, data.t, categories, year);
+    const item       = { id, name: data.n, type: data.t, categories, year, seen: false };
+    renderCard(item, true);
+    applyFilters(data.t);
+    shareBanner.classList.remove('visible');
+  };
+
+  shareBannerNo.onclick = () => shareBanner.classList.remove('visible');
+
+  // Affiche après un léger délai (laisse charger le DOM)
+  setTimeout(() => shareBanner.classList.add('visible'), 600);
+}
+
 const btnSettings     = document.getElementById('btn-settings');
 const settingsMenu    = document.getElementById('settings-menu');
 const settingsWrapper = document.getElementById('settings-wrapper');
@@ -688,6 +789,7 @@ importFileInput.addEventListener('change', async () => {
   try {
     db = await openDB();
     await Promise.all([loadItems('film'), loadItems('serie')]);
+    handleIncomingShare();
   } catch (err) {
     console.error('Erreur IndexedDB :', err);
   }

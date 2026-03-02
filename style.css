@@ -952,9 +952,132 @@ input[type="number"] {
 }
 
 
+
 .detail-footer {
   display: flex;
   justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition);
+}
+
+.btn-share:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.btn-share.copied {
+  color: #2ecc71;
+  border-color: rgba(46, 204, 113, 0.5);
+  background: rgba(46, 204, 113, 0.08);
+}
+
+
+.share-banner {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  width: calc(100% - 2rem);
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(108,99,255,0.2);
+  z-index: 300;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 1rem 1.1rem;
+}
+
+.share-banner.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.share-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.share-banner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.share-banner-label {
+  font-size: 0.72rem;
+  color: var(--accent-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.share-banner-title {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share-banner-meta {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.share-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.share-banner-yes {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+
+.share-banner-yes:hover { background: var(--accent-light); }
+
+.share-banner-no {
+  padding: 0.5rem 0.7rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.share-banner-no:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 .btn-find {
